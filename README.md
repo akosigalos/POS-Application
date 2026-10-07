@@ -18,6 +18,15 @@ A browser-based self-service Point of Sale (POS) application designed for touchs
 - New Transaction control that clears the active order and payment/receipt state
 - Responsive touchscreen-oriented layout for desktop and mobile screens
 
+## Receipt Printing and Download
+
+After completing a payment and opening the receipt, use the receipt actions to keep a copy:
+
+- Select **Print Receipt** to open the browser print dialog. The print layout contains only the receipt, including transaction details, purchased items, totals, discount, VAT, payment information, and payment status.
+- Select **Download Receipt** to save the same information as a plain-text (`.txt`) file. Files use a clear name such as `QuickBite-Receipt-TXN-001.txt`.
+
+Print and download actions are available only when a completed transaction is being shown.
+
 ## Branch Features
 
 ### Branch 1 — Product Search and Categories

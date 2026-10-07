@@ -246,6 +246,11 @@
             <p><span>Status</span><strong class="paid-status">Paid</strong></p>
           </div>
         </div>
+        <div class="receipt-actions" id="receipt-actions" aria-label="Receipt actions">
+          <button class="secondary-button" type="button" id="print-receipt-button" aria-label="Print the completed receipt" disabled>Print Receipt</button>
+          <button class="view-order-button" type="button" id="download-receipt-button" aria-label="Download the completed receipt as a text file" disabled>Download Receipt</button>
+        </div>
+        <p class="receipt-action-message" id="receipt-action-message" aria-live="polite"></p>
         <section class="feedback-form" id="feedback-form" aria-labelledby="feedback-title">
           <p class="eyebrow">RATE YOUR EXPERIENCE</p>
           <h3 id="feedback-title">How was your visit?</h3>

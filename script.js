@@ -61,6 +61,9 @@ const receiptMethod = document.querySelector("#receipt-method");
 const receiptPaid = document.querySelector("#receipt-paid");
 const receiptChange = document.querySelector("#receipt-change");
 const receiptCalculation = document.querySelector("#receipt-calculation");
+const printReceiptButton = document.querySelector("#print-receipt-button");
+const downloadReceiptButton = document.querySelector("#download-receipt-button");
+const receiptActionMessage = document.querySelector("#receipt-action-message");
 const newTransactionButton = document.querySelector("#new-transaction-button");
 const openHistoryButton = document.querySelector("#open-history-button");
 const historyScreen = document.querySelector("#history-screen");
@@ -352,6 +355,28 @@ viewReceiptButton.addEventListener("click", () => {
   window.scrollTo(0, 0);
 });
 
+printReceiptButton.addEventListener("click", () => {
+  if (!completedTransaction) return;
+
+  receiptActionMessage.textContent = "Opening the print dialog…";
+  window.print();
+});
+
+downloadReceiptButton.addEventListener("click", () => {
+  if (!completedTransaction) return;
+
+  const receiptFile = new Blob([createReceiptText(completedTransaction)], { type: "text/plain;charset=utf-8" });
+  const downloadUrl = URL.createObjectURL(receiptFile);
+  const link = document.createElement("a");
+  link.href = downloadUrl;
+  link.download = `QuickBite-Receipt-${completedTransaction.number}.txt`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+  receiptActionMessage.textContent = `Receipt downloaded as ${link.download}.`;
+});
+
 newTransactionButton.addEventListener("click", () => {
   order.splice(0, order.length);
   completedTransaction = null;
@@ -415,7 +440,10 @@ function showPaymentSuccess(method, change, paid = getOrderCalculation().finalTo
 }
 
 function renderReceipt() {
-  if (!completedTransaction) return;
+  if (!completedTransaction) {
+    updateReceiptActions();
+    return;
+  }
 
   receiptDate.textContent = new Date(completedTransaction.date).toLocaleString();
   receiptNumber.textContent = completedTransaction.number;
@@ -429,6 +457,47 @@ function renderReceipt() {
   receiptMethod.textContent = completedTransaction.method;
   receiptPaid.textContent = formatPrice(completedTransaction.paid);
   receiptChange.textContent = formatPrice(completedTransaction.change);
+  updateReceiptActions();
+}
+
+function updateReceiptActions() {
+  const hasCompletedTransaction = Boolean(completedTransaction);
+  printReceiptButton.disabled = !hasCompletedTransaction;
+  downloadReceiptButton.disabled = !hasCompletedTransaction;
+  if (!hasCompletedTransaction) receiptActionMessage.textContent = "";
+}
+
+function createReceiptText(transaction) {
+  const calculation = transaction.calculation;
+  const discountPercentage = Math.round(calculation.discountRate * 100);
+  const itemLines = transaction.items.map((item) => {
+    const itemSubtotal = item.price * item.quantity;
+    return `${item.name}\n  Qty ${item.quantity} × ${formatPrice(item.price)}  ${formatPrice(itemSubtotal)}`;
+  }).join("\n");
+
+  return [
+    "QUICKBITE POS",
+    "PAYMENT RECEIPT",
+    "=".repeat(34),
+    `Date: ${new Date(transaction.date).toLocaleString()}`,
+    `Transaction: ${transaction.number}`,
+    "",
+    "ITEMS",
+    itemLines,
+    "",
+    `Subtotal: ${formatPrice(calculation.subtotal)}`,
+    `${discountOptions[calculation.discountRate]} (${discountPercentage}%): -${formatPrice(calculation.discountAmount)}`,
+    `VAT (12%): ${formatPrice(calculation.vatAmount)}`,
+    `Final total: ${formatPrice(transaction.total)}`,
+    "",
+    `Payment method: ${transaction.method}`,
+    `Amount paid: ${formatPrice(transaction.paid)}`,
+    `Change: ${formatPrice(transaction.change)}`,
+    "Payment status: Paid",
+    "=".repeat(34),
+    "Thank you for choosing QuickBite!",
+    "",
+  ].join("\n");
 }
 
 function renderCalculationLines(calculation) {
@@ -460,6 +529,7 @@ function resetPaymentAndReceipt() {
   receiptMethod.textContent = "—";
   receiptPaid.textContent = formatPrice(0);
   receiptChange.textContent = formatPrice(0);
+  updateReceiptActions();
   selectedRating = 0;
   feedbackComment.value = "";
   feedbackCharacters.textContent = "300";

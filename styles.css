@@ -463,6 +463,12 @@ h3 { margin: 5px 0 0; font-size: 1.5rem; }
 .receipt-payment-details p { display: flex; justify-content: space-between; gap: 20px; margin: 0; padding: 8px 0; color: var(--muted); font-weight: 600; }
 .receipt-payment-details strong { color: var(--ink); text-align: right; }
 .receipt-payment-details .paid-status { color: var(--success); }
+.receipt-actions { display: flex; width: min(100%, 550px); margin: 20px auto 0; gap: 12px; }
+.receipt-actions button { flex: 1; }
+.receipt-actions .view-order-button { min-height: 60px; }
+.receipt-actions .secondary-button:disabled { border-color: #b7becb; color: #8a94a5; cursor: not-allowed; }
+.receipt-actions .secondary-button:disabled:hover { background: transparent; outline: none; }
+.receipt-action-message { min-height: 24px; margin: 10px auto 0; color: var(--success); font-weight: 700; text-align: center; }
 .new-transaction-button { display: block; min-width: 260px; margin: 26px auto 0; }
 .feedback-form { max-width: 550px; margin: 28px auto; padding: 28px; border: 1px solid var(--line); border-radius: 22px; background: var(--surface); text-align: center; }
 .feedback-form h3 { margin: 6px 0 18px; }
@@ -569,6 +575,9 @@ h3 { margin: 5px 0 0; font-size: 1.5rem; }
     font-size: 0.95rem;
   }
 
+  .receipt-actions { flex-direction: column; }
+  .receipt-actions button { width: 100%; }
+
   .summary-table-labels { display: none; }
   .summary-row { grid-template-columns: 1fr 0.4fr; gap: 8px; }
   .summary-row span:nth-of-type(1)::before { content: "Qty: "; }
@@ -610,4 +619,20 @@ h3 { margin: 5px 0 0; font-size: 1.5rem; }
   .rating-counts { grid-column: auto; }
   .star-rating { gap: 2px; }
   .star-rating button { width: 46px; }
+}
+
+@media print {
+  @page { margin: 12mm; }
+
+  body { min-width: 0; background: #fff; }
+  body * { visibility: hidden; }
+  #receipt-screen,
+  #receipt-screen .receipt-card,
+  #receipt-screen .receipt-card * { visibility: visible; }
+  #receipt-screen { display: block !important; position: absolute; inset: 0; width: 100%; padding: 0; }
+  #receipt-screen .receipt-card { width: 100%; max-width: none; margin: 0; padding: 0; border: 0; border-radius: 0; box-shadow: none; }
+  #receipt-actions,
+  #receipt-action-message,
+  #feedback-form,
+  #new-transaction-button { display: none !important; }
 }
