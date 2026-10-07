@@ -24,6 +24,7 @@
         </div>
         <div class="header-actions">
           <button class="history-button" type="button" id="open-history-button">Order History</button>
+          <button class="history-button" type="button" id="open-feedback-button">Feedback</button>
           <div class="order-status" aria-label="Current order status">
             <span class="status-dot" aria-hidden="true"></span>
             <span>New order</span>
@@ -245,6 +246,18 @@
             <p><span>Status</span><strong class="paid-status">Paid</strong></p>
           </div>
         </div>
+        <section class="feedback-form" id="feedback-form" aria-labelledby="feedback-title">
+          <p class="eyebrow">RATE YOUR EXPERIENCE</p>
+          <h3 id="feedback-title">How was your visit?</h3>
+          <div class="star-rating" role="group" aria-label="Choose a rating from one to five stars">
+            <button type="button" data-rating="1" aria-label="1 star" aria-pressed="false">★</button><button type="button" data-rating="2" aria-label="2 stars" aria-pressed="false">★</button><button type="button" data-rating="3" aria-label="3 stars" aria-pressed="false">★</button><button type="button" data-rating="4" aria-label="4 stars" aria-pressed="false">★</button><button type="button" data-rating="5" aria-label="5 stars" aria-pressed="false">★</button>
+          </div>
+          <label for="feedback-comment">Optional feedback</label>
+          <textarea id="feedback-comment" maxlength="300" placeholder="Tell us what you enjoyed or how we can improve."></textarea>
+          <p class="character-count"><span id="feedback-characters">300</span> characters remaining</p>
+          <p class="feedback-message" id="feedback-message" aria-live="polite"></p>
+          <button class="view-order-button" type="button" id="submit-feedback-button">Submit Feedback</button>
+        </section>
         <button class="view-order-button new-transaction-button" type="button" id="new-transaction-button">New Transaction</button>
       </section>
 
@@ -289,6 +302,15 @@
         </div>
 
         <button class="secondary-button history-back" type="button" id="history-back-button">Back to POS</button>
+      </section>
+
+      <section class="feedback-area screen is-hidden" id="feedback-screen" aria-labelledby="feedback-history-title">
+        <div class="section-heading"><div><p class="eyebrow">CUSTOMER RESPONSES</p><h2 id="feedback-history-title">Feedback history</h2></div><p class="helper-text">Saved feedback stays on this device.</p></div>
+        <section class="feedback-summary"><div class="report-heading"><p class="eyebrow">FEEDBACK SUMMARY</p><h3>Customer ratings</h3></div><div class="feedback-summary-grid"><div class="report-card"><span>Total feedback</span><strong id="feedback-total">0</strong></div><div class="report-card"><span>Average rating</span><strong id="feedback-average">0.0 ★</strong></div><div class="rating-counts" id="rating-counts"></div></div></section>
+        <div class="history-toolbar"><h3>Submitted feedback</h3><button class="clear-history-button" type="button" id="clear-feedback-button">Clear Feedback</button></div>
+        <div class="history-list" id="feedback-list" aria-live="polite"></div>
+        <div class="history-confirmation is-hidden" id="feedback-confirmation" role="dialog" aria-modal="true" aria-labelledby="confirm-feedback-clear-title"><div class="confirmation-dialog"><h3 id="confirm-feedback-clear-title">Clear saved feedback?</h3><p>This permanently removes all saved ratings and comments on this device.</p><div class="confirmation-actions"><button class="secondary-button" type="button" id="cancel-feedback-clear-button">Cancel</button><button class="clear-history-button" type="button" id="confirm-feedback-clear-button">Clear Feedback</button></div></div></div>
+        <button class="secondary-button history-back" type="button" id="feedback-back-button">Back to POS</button>
       </section>
     </main>
 

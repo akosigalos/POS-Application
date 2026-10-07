@@ -1,6 +1,8 @@
 const order = [];
 const HISTORY_STORAGE_KEY = "quickbite-pos-history";
+const FEEDBACK_STORAGE_KEY = "quickbite-pos-feedback";
 let transactionHistory = loadTransactionHistory();
+let feedbackHistory = loadFeedbackHistory();
 let transactionCounter = getLatestTransactionNumber(transactionHistory);
 let completedTransaction = null;
 const VAT_RATE = 0.12;
@@ -73,10 +75,28 @@ const clearHistoryButton = document.querySelector("#clear-history-button");
 const historyConfirmation = document.querySelector("#history-confirmation");
 const cancelClearButton = document.querySelector("#cancel-clear-button");
 const confirmClearButton = document.querySelector("#confirm-clear-button");
+const feedbackForm = document.querySelector("#feedback-form");
+const feedbackComment = document.querySelector("#feedback-comment");
+const feedbackCharacters = document.querySelector("#feedback-characters");
+const feedbackMessage = document.querySelector("#feedback-message");
+const submitFeedbackButton = document.querySelector("#submit-feedback-button");
+const ratingButtons = document.querySelectorAll(".star-rating button");
+const openFeedbackButton = document.querySelector("#open-feedback-button");
+const feedbackScreen = document.querySelector("#feedback-screen");
+const feedbackBackButton = document.querySelector("#feedback-back-button");
+const feedbackTotal = document.querySelector("#feedback-total");
+const feedbackAverage = document.querySelector("#feedback-average");
+const ratingCounts = document.querySelector("#rating-counts");
+const feedbackList = document.querySelector("#feedback-list");
+const clearFeedbackButton = document.querySelector("#clear-feedback-button");
+const feedbackConfirmation = document.querySelector("#feedback-confirmation");
+const cancelFeedbackClearButton = document.querySelector("#cancel-feedback-clear-button");
+const confirmFeedbackClearButton = document.querySelector("#confirm-feedback-clear-button");
 
 const formatPrice = (price) => `₱${price.toFixed(2)}`;
 let selectedDiscountRate = 0;
 let selectedCategory = "all";
+let selectedRating = 0;
 
 productGrid.addEventListener("click", (event) => {
   const card = event.target.closest(".product-card");
@@ -300,6 +320,31 @@ confirmClearButton.addEventListener("click", () => {
   renderHistory();
 });
 
+ratingButtons.forEach((button) => button.addEventListener("click", () => {
+  selectedRating = Number(button.dataset.rating);
+  ratingButtons.forEach((star) => { const active = Number(star.dataset.rating) <= selectedRating; star.classList.toggle("is-selected", active); star.setAttribute("aria-pressed", String(active)); });
+  feedbackMessage.textContent = "";
+}));
+
+feedbackComment.addEventListener("input", () => { feedbackCharacters.textContent = 300 - feedbackComment.value.length; });
+
+submitFeedbackButton.addEventListener("click", () => {
+  if (!selectedRating) { feedbackMessage.textContent = "Please choose a star rating before submitting feedback."; return; }
+  feedbackHistory.unshift({ rating: selectedRating, comment: feedbackComment.value.trim(), transactionNumber: completedTransaction?.number || "", date: new Date().toISOString() });
+  saveFeedbackHistory();
+  feedbackMessage.textContent = "Thank you for your feedback!";
+  submitFeedbackButton.disabled = true;
+});
+
+openFeedbackButton.addEventListener("click", () => {
+  selectionScreen.classList.add("is-hidden"); summaryScreen.classList.add("is-hidden"); paymentScreen.classList.add("is-hidden"); receiptScreen.classList.add("is-hidden"); historyScreen.classList.add("is-hidden"); orderBar.classList.add("is-hidden");
+  feedbackScreen.classList.remove("is-hidden"); feedbackConfirmation.classList.add("is-hidden"); renderFeedbackHistory(); window.scrollTo(0, 0);
+});
+feedbackBackButton.addEventListener("click", () => { feedbackScreen.classList.add("is-hidden"); selectionScreen.classList.remove("is-hidden"); orderBar.classList.remove("is-hidden"); window.scrollTo(0, 0); });
+clearFeedbackButton.addEventListener("click", () => feedbackConfirmation.classList.remove("is-hidden"));
+cancelFeedbackClearButton.addEventListener("click", () => feedbackConfirmation.classList.add("is-hidden"));
+confirmFeedbackClearButton.addEventListener("click", () => { feedbackHistory = []; localStorage.removeItem(FEEDBACK_STORAGE_KEY); feedbackConfirmation.classList.add("is-hidden"); renderFeedbackHistory(); });
+
 viewReceiptButton.addEventListener("click", () => {
   renderReceipt();
   paymentScreen.classList.add("is-hidden");
@@ -415,6 +460,12 @@ function resetPaymentAndReceipt() {
   receiptMethod.textContent = "—";
   receiptPaid.textContent = formatPrice(0);
   receiptChange.textContent = formatPrice(0);
+  selectedRating = 0;
+  feedbackComment.value = "";
+  feedbackCharacters.textContent = "300";
+  feedbackMessage.textContent = "";
+  submitFeedbackButton.disabled = false;
+  ratingButtons.forEach((star) => { star.classList.remove("is-selected"); star.setAttribute("aria-pressed", "false"); });
 }
 
 function loadTransactionHistory() {
@@ -428,6 +479,17 @@ function loadTransactionHistory() {
 
 function saveTransactionHistory() {
   localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(transactionHistory));
+}
+
+function loadFeedbackHistory() { try { const saved = JSON.parse(localStorage.getItem(FEEDBACK_STORAGE_KEY)); return Array.isArray(saved) ? saved : []; } catch { return []; } }
+function saveFeedbackHistory() { localStorage.setItem(FEEDBACK_STORAGE_KEY, JSON.stringify(feedbackHistory)); }
+function renderFeedbackHistory() {
+  const counts = [1, 2, 3, 4, 5].map((rating) => feedbackHistory.filter((entry) => entry.rating === rating).length);
+  const average = feedbackHistory.length ? feedbackHistory.reduce((sum, entry) => sum + entry.rating, 0) / feedbackHistory.length : 0;
+  feedbackTotal.textContent = feedbackHistory.length;
+  feedbackAverage.textContent = `${average.toFixed(1)} ★`;
+  ratingCounts.innerHTML = counts.map((count, index) => `<p><span>${index + 1} ★</span><strong>${count}</strong></p>`).join("");
+  feedbackList.innerHTML = feedbackHistory.length ? feedbackHistory.map((entry) => `<article class="history-item"><div class="history-item-header"><div><p class="eyebrow">${entry.transactionNumber || "NO TRANSACTION"}</p><h3>${"★".repeat(entry.rating)}${"☆".repeat(5 - entry.rating)}</h3></div><time datetime="${entry.date}">${new Date(entry.date).toLocaleString()}</time></div><p class="history-items">${entry.comment || "No written feedback provided."}</p></article>`).join("") : '<p class="empty-history">No feedback has been submitted yet.</p>';
 }
 
 function getLatestTransactionNumber(history) {
