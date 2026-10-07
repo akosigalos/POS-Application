@@ -22,9 +22,12 @@
             <h1>QuickBite</h1>
           </div>
         </div>
-        <div class="order-status" aria-label="Current order status">
-          <span class="status-dot" aria-hidden="true"></span>
-          <span>New order</span>
+        <div class="header-actions">
+          <button class="history-button" type="button" id="open-history-button">Order History</button>
+          <div class="order-status" aria-label="Current order status">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>New order</span>
+          </div>
         </div>
       </header>
 
@@ -82,8 +85,17 @@
             <div class="cart-items" id="cart-items" aria-live="polite">
               <p class="empty-cart">Your selected items will appear here.</p>
             </div>
+            <div class="discount-control">
+              <label for="discount-select">Discount</label>
+              <select id="discount-select">
+                <option value="0">No Discount — 0%</option>
+                <option value="0.1">Student Discount — 10%</option>
+                <option value="0.2">Senior Citizen / PWD Discount — 20%</option>
+              </select>
+            </div>
+            <div class="calculation-lines" id="cart-calculation"></div>
             <div class="cart-total">
-              <span>Total</span>
+              <span>Final total to pay</span>
               <strong id="order-total">₱0.00</strong>
             </div>
           </aside>
@@ -114,8 +126,9 @@
             <span>Item</span><span>Qty.</span><span>Unit price</span><span>Subtotal</span>
           </div>
           <div id="summary-items" class="summary-items"></div>
+          <div class="summary-calculation calculation-lines" id="summary-calculation"></div>
           <div class="summary-total">
-            <span>Total amount</span>
+            <span>Final total to pay</span>
             <strong id="summary-total">₱0.00</strong>
           </div>
         </div>
@@ -156,6 +169,7 @@
         <div class="payment-detail is-hidden" id="cash-panel">
           <h3>Cash payment</h3>
           <p class="amount-due">Total due <strong id="cash-total">₱0.00</strong></p>
+          <div class="payment-breakdown" id="cash-breakdown"></div>
           <label class="payment-label" for="amount-paid">Amount received</label>
           <input id="amount-paid" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Enter amount received" />
           <p class="payment-message" id="cash-message" aria-live="polite"></p>
@@ -165,6 +179,7 @@
         <div class="payment-detail is-hidden" id="qr-panel">
           <h3>QR payment</h3>
           <p class="amount-due">Amount to pay <strong id="qr-total">₱0.00</strong></p>
+          <div class="payment-breakdown" id="qr-breakdown"></div>
           <div class="qr-placeholder" aria-label="Simulated QR code" role="img"><span>▣</span></div>
           <p class="payment-instructions">Open your payment app and scan this QR code. Confirm after your payment is complete.</p>
           <button class="view-order-button" type="button" id="qr-confirm-button">Confirm Payment</button>
@@ -173,6 +188,7 @@
         <div class="payment-detail is-hidden" id="card-panel">
           <h3>Card payment</h3>
           <p class="amount-due">Amount due <strong id="card-total">₱0.00</strong></p>
+          <div class="payment-breakdown" id="card-breakdown"></div>
           <p class="card-instruction" aria-hidden="true">▰</p>
           <p class="payment-instructions">Please tap, insert, or swipe your card.</p>
           <button class="view-order-button" type="button" id="card-process-button">Process Payment</button>
@@ -182,8 +198,9 @@
           <span class="success-check" aria-hidden="true">✓</span>
           <p class="eyebrow">PAYMENT SUCCESSFUL</p>
           <h3>Thank you!</h3>
+          <div class="confirmation-breakdown" id="confirmation-breakdown"></div>
           <div class="confirmation-details">
-            <p>Transaction amount <strong id="confirmation-total">₱0.00</strong></p>
+            <p>Final total <strong id="confirmation-total">₱0.00</strong></p>
             <p>Amount paid <strong id="confirmation-paid">₱0.00</strong></p>
             <p>Payment method <strong id="confirmation-method">—</strong></p>
             <p>Reference number <strong id="confirmation-number">—</strong></p>
@@ -204,7 +221,8 @@
             <strong id="receipt-number"></strong>
           </div>
           <div class="receipt-items" id="receipt-items"></div>
-          <div class="receipt-total-line"><span>Total</span><strong id="receipt-total">₱0.00</strong></div>
+          <div class="receipt-calculation calculation-lines" id="receipt-calculation"></div>
+          <div class="receipt-total-line"><span>Final total</span><strong id="receipt-total">₱0.00</strong></div>
           <div class="receipt-payment-details">
             <p><span>Payment method</span><strong id="receipt-method">—</strong></p>
             <p><span>Amount paid</span><strong id="receipt-paid">₱0.00</strong></p>
@@ -213,6 +231,49 @@
           </div>
         </div>
         <button class="view-order-button new-transaction-button" type="button" id="new-transaction-button">New Transaction</button>
+      </section>
+
+      <section class="history-area screen is-hidden" id="history-screen" aria-labelledby="history-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">SAVED TRANSACTIONS</p>
+            <h2 id="history-title">Order history</h2>
+          </div>
+          <p class="helper-text">Your completed transactions are saved on this device.</p>
+        </div>
+
+        <section class="sales-report" aria-labelledby="sales-report-title">
+          <div class="report-heading">
+            <p class="eyebrow">DAILY SALES REPORT</p>
+            <h3 id="sales-report-title">Today’s sales</h3>
+          </div>
+          <div class="report-grid">
+            <div class="report-card"><span>Completed transactions</span><strong id="report-count">0</strong></div>
+            <div class="report-card"><span>Total sales</span><strong id="report-sales">₱0.00</strong></div>
+            <div class="report-card"><span>Cash payments</span><strong id="report-cash">₱0.00</strong></div>
+            <div class="report-card"><span>QR payments</span><strong id="report-qr">₱0.00</strong></div>
+            <div class="report-card"><span>Card payments</span><strong id="report-card">₱0.00</strong></div>
+          </div>
+        </section>
+
+        <div class="history-toolbar">
+          <h3>Completed orders</h3>
+          <button class="clear-history-button" type="button" id="clear-history-button">Clear History</button>
+        </div>
+        <div class="history-list" id="history-list" aria-live="polite"></div>
+
+        <div class="history-confirmation is-hidden" id="history-confirmation" role="dialog" aria-modal="true" aria-labelledby="confirm-clear-title">
+          <div class="confirmation-dialog">
+            <h3 id="confirm-clear-title">Clear saved history?</h3>
+            <p>This will permanently remove all saved transactions and reset the daily sales report on this device.</p>
+            <div class="confirmation-actions">
+              <button class="secondary-button" type="button" id="cancel-clear-button">Cancel</button>
+              <button class="clear-history-button" type="button" id="confirm-clear-button">Clear History</button>
+            </div>
+          </div>
+        </div>
+
+        <button class="secondary-button history-back" type="button" id="history-back-button">Back to POS</button>
       </section>
     </main>
 
