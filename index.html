@@ -40,34 +40,49 @@
           <p class="helper-text">Tap an item to add it to your order.</p>
         </div>
 
+        <div class="product-tools">
+          <div class="category-filters" role="group" aria-label="Product categories">
+            <button class="category-button is-selected" type="button" data-category="all" aria-pressed="true">All Items</button>
+            <button class="category-button" type="button" data-category="drinks" aria-pressed="false">Drinks</button>
+            <button class="category-button" type="button" data-category="food" aria-pressed="false">Food</button>
+            <button class="category-button" type="button" data-category="snacks" aria-pressed="false">Snacks</button>
+          </div>
+          <label class="search-field" for="product-search">
+            <span aria-hidden="true">⌕</span>
+            <span class="sr-only">Search products</span>
+            <input id="product-search" type="search" placeholder="Search products" autocomplete="off" />
+          </label>
+        </div>
+        <p class="product-empty is-hidden" id="product-empty" aria-live="polite">No products match your search.</p>
+
         <div class="selection-layout">
           <div class="product-grid" id="product-grid">
-          <button class="product-card" type="button" data-product="Coffee" data-price="95">
+          <button class="product-card" type="button" data-product="Coffee" data-price="95" data-category="drinks">
             <span class="product-icon" aria-hidden="true">☕</span>
             <span class="product-name">Coffee</span>
             <span class="product-price">₱95.00</span>
           </button>
-          <button class="product-card" type="button" data-product="Sandwich" data-price="145">
+          <button class="product-card" type="button" data-product="Sandwich" data-price="145" data-category="food">
             <span class="product-icon" aria-hidden="true">🥪</span>
             <span class="product-name">Sandwich</span>
             <span class="product-price">₱145.00</span>
           </button>
-          <button class="product-card" type="button" data-product="Soft Drink" data-price="65">
+          <button class="product-card" type="button" data-product="Soft Drink" data-price="65" data-category="drinks">
             <span class="product-icon" aria-hidden="true">🥤</span>
             <span class="product-name">Soft Drink</span>
             <span class="product-price">₱65.00</span>
           </button>
-          <button class="product-card" type="button" data-product="Cookies" data-price="75">
+          <button class="product-card" type="button" data-product="Cookies" data-price="75" data-category="snacks">
             <span class="product-icon" aria-hidden="true">🍪</span>
             <span class="product-name">Cookies</span>
             <span class="product-price">₱75.00</span>
           </button>
-          <button class="product-card" type="button" data-product="Bottled Water" data-price="35">
+          <button class="product-card" type="button" data-product="Bottled Water" data-price="35" data-category="drinks">
             <span class="product-icon" aria-hidden="true">💧</span>
             <span class="product-name">Bottled Water</span>
             <span class="product-price">₱35.00</span>
           </button>
-          <button class="product-card" type="button" data-product="Chocolate" data-price="85">
+          <button class="product-card" type="button" data-product="Chocolate" data-price="85" data-category="snacks">
             <span class="product-icon" aria-hidden="true">🍫</span>
             <span class="product-name">Chocolate</span>
             <span class="product-price">₱85.00</span>
