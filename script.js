@@ -2,6 +2,10 @@ const order = [];
 let transactionCounter = 0;
 let completedTransaction = null;
 const productGrid = document.querySelector("#product-grid");
+const productCards = document.querySelectorAll(".product-card");
+const categoryFilters = document.querySelector(".category-filters");
+const productSearch = document.querySelector("#product-search");
+const productEmpty = document.querySelector("#product-empty");
 const itemCount = document.querySelector("#item-count");
 const orderSummary = document.querySelector("#order-summary");
 const orderTotal = document.querySelector("#order-total");
@@ -44,6 +48,7 @@ const receiptChange = document.querySelector("#receipt-change");
 const newTransactionButton = document.querySelector("#new-transaction-button");
 
 const formatPrice = (price) => `₱${price.toFixed(2)}`;
+let selectedCategory = "all";
 
 productGrid.addEventListener("click", (event) => {
   const card = event.target.closest(".product-card");
@@ -65,6 +70,21 @@ productGrid.addEventListener("click", (event) => {
   renderOrder();
 });
 
+categoryFilters.addEventListener("click", (event) => {
+  const categoryButton = event.target.closest("[data-category]");
+  if (!categoryButton) return;
+
+  selectedCategory = categoryButton.dataset.category;
+  categoryFilters.querySelectorAll(".category-button").forEach((button) => {
+    const isSelected = button === categoryButton;
+    button.classList.toggle("is-selected", isSelected);
+    button.setAttribute("aria-pressed", String(isSelected));
+  });
+  updateProductVisibility();
+});
+
+productSearch.addEventListener("input", updateProductVisibility);
+
 cartItems.addEventListener("click", (event) => {
   const actionButton = event.target.closest("button[data-action]");
 
@@ -84,6 +104,21 @@ cartItems.addEventListener("click", (event) => {
 
 function getOrderTotal() {
   return order.reduce((total, item) => total + item.price * item.quantity, 0);
+}
+
+function updateProductVisibility() {
+  const searchTerm = productSearch.value.trim().toLowerCase();
+  let visibleProducts = 0;
+
+  productCards.forEach((card) => {
+    const matchesCategory = selectedCategory === "all" || card.dataset.category === selectedCategory;
+    const matchesSearch = card.dataset.product.toLowerCase().includes(searchTerm);
+    const isVisible = matchesCategory && matchesSearch;
+    card.hidden = !isVisible;
+    if (isVisible) visibleProducts += 1;
+  });
+
+  productEmpty.classList.toggle("is-hidden", visibleProducts !== 0);
 }
 
 function renderOrder() {
